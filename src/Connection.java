@@ -31,6 +31,14 @@ public class Connection
 			System.out.println("IO Error!!! (sendMessage)");
 		}
 	}
+	public void BusyLine(String Nick)
+	{
+		sendMessage("ChatApp 2015 v1. user "+Nick+" busy");
+	}
+	public void Call(String Nick)
+	{
+		sendMessage("ChatApp 2015 v1. The user with the nickname "+Nick+" says hi to you");
+	}
 	public void receiveMessage()
 	{
 		try
