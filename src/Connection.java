@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Scanner;
 
 
 public class Connection 
@@ -16,6 +17,9 @@ public class Connection
 	//private int ip;
 	private ServerSocket serverSocket;
 	private Socket socket;
+	
+	private String line;
+	
 	public void sendMessage(String Text)
 	{
 		try
@@ -31,13 +35,14 @@ public class Connection
 			System.out.println("IO Error!!! (sendMessage)");
 		}
 	}
-	public void BusyLine(String Nick)
+	public void BusyLine()
 	{
-		sendMessage("ChatApp 2015 v1. user "+Nick+" busy");
+		sendMessage("ChatApp 2015 v1. user '"+socket.getInetAddress()+"' busy");
 	}
-	public void Call(String Nick)
+	public void SuccessfulCall()
 	{
-		sendMessage("ChatApp 2015 v1. The user with the nickname "+Nick+" says hi to you");
+		sendMessage("ChatApp 2015 v1. The user with ip: '"+socket.getInetAddress()+"' answered");
+		receiveMessage();
 	}
 	public void receiveMessage()
 	{
@@ -45,11 +50,9 @@ public class Connection
 		{
 			InputStream in= socket.getInputStream();
 			DataInputStream inC = new DataInputStream(in);
-			String line = null;
-			
+			line = null;
 				line=inC.readUTF();
 				System.out.println("line: "+line+"; IP: "+socket.getInetAddress()+"; port: "+socket.getLocalPort());
-				sendMessage("Message has been received");
 
 		}
 		catch(IOException e)
@@ -65,7 +68,32 @@ public class Connection
 			serverSocket=new ServerSocket(port);
 			socket= serverSocket.accept();
 			System.out.println("Got a client!");
-			sendMessage("Successfully connected");
+			int choose=0;
+				//Записывать и читать ограниченое кол-во бит
+				System.out.println();
+				System.out.println("1 - Принять.");
+				System.out.println("2 - Отклонить.");
+
+				Scanner input = new Scanner(System.in);
+				choose=input.nextInt();
+				//input.close();
+			
+				switch(choose)
+				{
+					case 1:
+						SuccessfulCall();
+						break;
+					case 2:
+						BusyLine();
+						break;
+					default:
+						System.out.println();
+						System.out.println("Вам почти удалось попасть в диапазон!!! Попытайте удачу снова!!!");
+						System.out.println();
+						break;
+				}
+			//sendMessage("Successfully connected");
+			//receiveMessage();
 		}
 		catch(IOException e)
 		{
@@ -80,6 +108,7 @@ public class Connection
 			InetAddress ip= InetAddress.getByName(ipStr);
 			socket= new Socket(ip,port);
 			receiveMessage();
+			sendMessage("ChatApp 2015 v1. The user with ip: '"+socket.getInetAddress()+"' successfully connected");
 			//System.out.println("Successfully connected");
 		}
 		catch(IOException e)
@@ -89,15 +118,7 @@ public class Connection
 	}
 	public void disconnect()
 	{
-		try 
-		{
 			sendMessage("Disconnect");
-			socket.close();
-		} 
-		catch (IOException e) 
-		{
-			System.out.println("IO Error!!! (disconnect)");
-		}
 	}
 
 }
