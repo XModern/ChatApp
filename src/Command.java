@@ -1,31 +1,40 @@
+import java.io.IOException;
+import java.util.Scanner;
+
 
 public class Command
 {
 	private String currentCommand;
 	
-	private Connection connection= new Connection();
+	//private Connection connection= new Connection();
 	
-	public void ConnectWith(String ipStr)
+	private void check(String command)
 	{
-		connection.connectionFromMe(ipStr);
+		if (command.equals("Disconnect"))
+		{
+			currentCommand=command.toUpperCase();
+		}
+		else if(command.equals("Accept"))
+		{
+			currentCommand=command.toUpperCase();
+		}
+		else if(command.equals("Reject"))
+		{
+			currentCommand=command.toUpperCase();
+		}
+		else if(command.equals("Message"))
+		{
+			currentCommand=command.toUpperCase();
+		}
+		else if(command.equals("Nick"))
+		{
+			currentCommand=command.toUpperCase();
+		}
+		else currentCommand=null;
 	}
-	public void ReceiveConnection()
+	public String receive(String command)
 	{
-		connection.connectionToMe();
+		check(command);
+		return currentCommand;
 	}
-	public void breakTheConnection()
-	{
-		connection.disconnect();
-	}
-	public void checkTheConnection()
-	{
-
-	}
-	
-	public void sendMessage(String Text)
-	{
-		
-	}
-	
-
 }

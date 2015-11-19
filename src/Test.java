@@ -7,7 +7,7 @@ import java.util.Scanner;
 
 
 
-public class Test 
+public class Test
 {
 
 	public static void main(String[] args) throws IOException 
@@ -27,8 +27,9 @@ public class Test
 			//connection.checkTheConnection();
 			System.out.println();
 			System.out.println("1 - Отправить сообщение.");
-			System.out.println("2 - Подключится.");
-			System.out.println("3 - Отключится.");
+			System.out.println("2 - Принять сообщение.");
+			System.out.println("3 - Подключится.");
+			System.out.println("4 - Отключится.");
 			
 			Scanner input = new Scanner(System.in);
 			choose=input.nextInt();
@@ -43,9 +44,12 @@ public class Test
 					connection.sendMessage(Text);
 					break;
 				case 2:
-					connection.ConnectWith("127.0.0.1");		
+					connection.receiveMessage();	
 					break;
 				case 3:
+					connection.ConnectWith("127.0.0.1");		
+					break;
+				case 4:
 					connection.breakTheConnection();
 					break;
 				default:
@@ -55,7 +59,7 @@ public class Test
 					break;
 			}
 		}
-		while(choose!=3);
+		while(choose!=0);
 		
 		
 		
