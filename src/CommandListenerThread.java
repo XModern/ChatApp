@@ -1,5 +1,8 @@
+import java.util.Observable;
+import java.util.Observer;
 
-public class CommandListenerThread implements Runnable
+
+public class CommandListenerThread extends Observable implements Runnable
 {
 	private Connection connection;
 	private Command lastCommand;
@@ -35,5 +38,23 @@ public class CommandListenerThread implements Runnable
 		}
 		
 	}
+	
+	public void setConnection(Connection connection)
+	{
+		disconnect=false;
+		this.connection=connection;
+	}
+	
+	public String getLastCommandS() 
+	{
+		return lastCommand.getCurrentCommand();
+	}
+	
+	public Command getLastCommand() 
+	{
+		return lastCommand;
+	}
+
+
 
 }

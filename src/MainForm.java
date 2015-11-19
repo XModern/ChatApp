@@ -2,12 +2,17 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.util.Date;
+import java.util.Observable;
+import java.util.Observer;
 
 import javafx.geometry.Insets;
 
@@ -21,14 +26,47 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 
+
 public class MainForm 
 {
 	JFrame frame;
+	private Caller caller;
+	private Connection connection;
+	private CallListener callListener;
+	private CallListenerThread callListenerThread;
+	private CommandListenerThread commandListenerThread;
+	
+	
+	private JButton connectButton= new JButton("Connect");
+	private JButton disconnectButton= new JButton("Disconnect");
+	private JButton sendButton= new JButton("Send");
+	private JButton applyButton= new JButton("Apply");
+	
+	private JTextArea IncomingMessage=new JTextArea("Text");
+	private JLabel remoteLogin= new JLabel("remote login: ");
+	private JTextField remoteLoginField= new JTextField(10);
+	private JLabel remoteAddr= new JLabel("remote addr: ");
+	private JTextField remoteAddrField= new JTextField(10);
+	private JLabel localLogin= new JLabel("local login: ");
+	private JTextField localLoginField= new JTextField(10);
 
 	public static void main(String[] args) 
 	{
-		MainForm window = new MainForm();
-		window.frame.setVisible(true);
+		EventQueue.invokeLater(new Runnable() 
+								{
+									public void run() 
+									{
+										try 
+										{
+											MainForm window = new MainForm();
+											window.frame.setVisible(true);
+										}
+										catch (Exception e) 
+										{
+											e.printStackTrace();
+										}
+									}
+								});
 	}
 	
 	private MainForm()
@@ -45,13 +83,12 @@ public class MainForm
 		frame.setLocation((Screensize.height)/2, (Screensize.width)/6);
 		frame.setLayout(new BorderLayout());
 		frame.setResizable(false);
+		frame.setTitle("KILL me");
 		
-		final JButton connectButton= new JButton("Connect");
-		final JButton disconnectButton= new JButton("Disconnect");
-		final JButton sendButton= new JButton("Send");
-		final JButton applyButton= new JButton("Apply");
+		
 		
 		disconnectButton.setEnabled(false);
+		sendButton.setEnabled(false);
 		
 		
 		JPanel leftSideTopPanel= new JPanel();
@@ -59,21 +96,10 @@ public class MainForm
 		
 		JPanel leftSideTopPanelTextLabel= new JPanel();
 		leftSideTopPanelTextLabel.setLayout(new BoxLayout(leftSideTopPanelTextLabel,BoxLayout.X_AXIS));
-		JLabel localLogin= new JLabel("local login: ");
-		JTextField localLoginField= new JTextField(10);
 		
 		
 		//applyButton= new JButton("Apply");
-		applyButton.addActionListener(new ActionListener() 
-		 {
-	            public void actionPerformed(ActionEvent e) 
-	            {
-	                connectButton.setEnabled(true);
-	                disconnectButton.setEnabled(false);
-	                sendButton.setEnabled(false);
-	                applyButton.setEnabled(true);
-	            }
-	        });
+
 		
 		JPanel leftSideTopPanelApplyButton= new JPanel();
 		leftSideTopPanelApplyButton.setLayout(new BorderLayout());
@@ -93,19 +119,9 @@ public class MainForm
 		JPanel rightSideTopPanelRemoteLogin= new JPanel();
 		rightSideTopPanelRemoteLogin.setLayout(new BoxLayout(rightSideTopPanelRemoteLogin,BoxLayout.X_AXIS));
 		
-		JLabel remoteLogin= new JLabel("remote login: ");
-		final JTextField remoteLoginField= new JTextField(10);
+
 		//disconnectButton= new JButton("Disconnect");
-		disconnectButton.addActionListener(new ActionListener() 
-		 {
-	            public void actionPerformed(ActionEvent e) 
-	            {
-	                connectButton.setEnabled(true);
-	                disconnectButton.setEnabled(false);
-	                sendButton.setEnabled(false);
-	                applyButton.setEnabled(true);
-	            }
-	        });
+
 		rightSideTopPanelRemoteLogin.add(remoteLogin);
 		rightSideTopPanelRemoteLogin.add(remoteLoginField);
 		rightSideTopPanelRemoteLogin.add(disconnectButton);
@@ -114,10 +130,11 @@ public class MainForm
 		JPanel rightSideTopPanelRemoteAddr= new JPanel();
 		rightSideTopPanelRemoteAddr.setLayout(new BoxLayout(rightSideTopPanelRemoteAddr,BoxLayout.X_AXIS));
 		
-		JLabel remoteAddr= new JLabel("remote addr: ");
-		JTextField remoteAddrField= new JTextField(10);
+
 		//connectButton= new JButton("Connect");
-		connectButton.addActionListener(new ActionListener() 
+		
+		
+		/*connectButton.addActionListener(new ActionListener() 
 		 {
 	            public void actionPerformed(ActionEvent e) 
 	            {
@@ -126,8 +143,9 @@ public class MainForm
 	                sendButton.setEnabled(true);
 	                applyButton.setEnabled(true);
 	                remoteLoginField.getText();
+
 	            }
-	        });
+	        });*/
 		 
 		rightSideTopPanelRemoteAddr.add(remoteAddr);
 		rightSideTopPanelRemoteAddr.add(remoteAddrField);
@@ -156,7 +174,6 @@ public class MainForm
 		JPanel CentralPanel= new JPanel();
 		CentralPanel.setLayout(new BoxLayout(CentralPanel,BoxLayout.LINE_AXIS));
 		
-		JTextArea IncomingMessage=new JTextArea("Text");
 		
 		IncomingMessage.setLineWrap(true);
 		IncomingMessage.setWrapStyleWord(true);
@@ -175,16 +192,19 @@ public class MainForm
 		IncomingMessage.setForeground(new Color(255,100,20));
 		IncomingMessage.setMaximumSize(new Dimension(frame.getWidth(),frame.getHeight()-107));
 		//JLabel IncomingMessage=new JLabel("Hi");
-		CentralPanel.add(IncomingMessage);
+		JScrollPane scrollPane = new JScrollPane(IncomingMessage);
+		
+		CentralPanel.add(scrollPane);
 		
 	
 		
 		
 		JPanel mergeTopCenter= new JPanel();
-		mergeTopCenter.setLayout(new BoxLayout(mergeTopCenter,BoxLayout.Y_AXIS));
+		mergeTopCenter.setLayout(new BorderLayout(5,5));
+		//mergeTopCenter.setLayout(new BoxLayout(mergeTopCenter,BoxLayout.Y_AXIS));
 		
-		mergeTopCenter.add(topPanel);
-		mergeTopCenter.add(CentralPanel);
+		mergeTopCenter.add(topPanel,BorderLayout.PAGE_START);
+		mergeTopCenter.add(CentralPanel,BorderLayout.CENTER);
 		
 		/*mergeTopCenter.setLayout(new GridLayout());		
 		
@@ -252,10 +272,163 @@ public class MainForm
 		bottomPanel.add(textArea);
 		bottomPanel.add(sendButton);
 		
+		sendButton.addActionListener(new ActionListener() 
+		 {
+	            public void actionPerformed(ActionEvent e) 
+	            {
+	                sendButton.setEnabled(false);
+
+	            }
+	        });
+		
+		connectButton.addActionListener(new ActionListener() 
+		 {
+	            public void actionPerformed(ActionEvent e) 
+	            {
+	                connectButton.setEnabled(false);
+	                disconnectButton.setEnabled(true);
+	                sendButton.setEnabled(true);
+	                applyButton.setEnabled(true);
+	                if (!remoteAddrField.getText().equals("")) 
+	                {
+	                	if (localLoginField.getText().equals(""))
+	                	{
+	                		localLoginField.setText("Guest");
+	                	}
+	                	caller=new Caller(localLoginField.getText(),remoteAddrField.getText());
+	                	/*try
+	                	{*/
+	                		connection= caller.call();
+	                		//connection=new Connection(localLoginField.getText(),remoteAddrField.getText());
+	                		localLoginField.setEditable(false);
+	                		remoteAddrField.setEditable(false);
+	                		//remoteAddrField.setText(callListenerThread.getCallInternetAddress().toString());
+	                		if (connection != null) 
+	                		{
+	                			remoteLoginField.setText(callListenerThread.getCallInternetAddress().toString());
+	                			//System.out.println("---------------------------");
+								connection.SuccessfulCall(localLoginField.getText());
+								System.out.println("---------------------------");
+								commandListenerThread = new CommandListenerThread(connection);
+								commandListenerThread.start();
+							}
+	                	/*}
+	                	catch (InterruptedException er)
+		                {
+	                		System.out.println("Error!!! (connectButton)(InterruptedException)");
+						} 
+	                	catch (IOException er) 
+						{
+	                										
+						}*/
+	                	//remoteAddrField.getText();
+	                }
+
+	            }
+	        });
+		
+		disconnectButton.addActionListener(new ActionListener() 
+		 {
+	            public void actionPerformed(ActionEvent e) 
+	            {
+	            	if (connection != null) 
+	            	{
+						connection.disconnect();
+						connectButton.setEnabled(true);
+						disconnectButton.setEnabled(false);
+						sendButton.setEnabled(false);
+						applyButton.setEnabled(true);
+						localLoginField.setEditable(true);
+						remoteAddrField.setEditable(true);
+	            	}
+	            }
+	        });
+		
+		applyButton.addActionListener(new ActionListener() 
+		 {
+	            public void actionPerformed(ActionEvent e) 
+	            {
+	                connectButton.setEnabled(true);
+	                disconnectButton.setEnabled(false);
+	                sendButton.setEnabled(false);
+	                applyButton.setEnabled(true);
+	            }
+	        });
+		
 		
 		frame.add(bottomPanel,BorderLayout.PAGE_END);
 		
 	}
+	
+	public void ThreadOfCall() throws IOException {
+		callListenerThread.addObserver(new Observer() {
+
+			public void update(Observable arg0, Object arg1) 
+			{
+				connection = callListenerThread.getConnection();
+				commandListenerThread.setConnection(connection);
+				commandListenerThread.start();
+				/*try 
+				{
+					forConnect();
+				} 
+				catch (IOException e) 
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}*/
+			}
+
+		});
+
+	}
+	
+	public void ThreadOfCommand() 
+	{
+				commandListenerThread.addObserver(new Observer() 
+				{
+					public void update(Observable arg0, Object arg1) 
+					{
+						String lastCommand = commandListenerThread.getLastCommandS();
+						Command commandList=new Command();
+						if (lastCommand.toUpperCase().equals("MESSAGE")) 
+						{
+							IncomingMessage.setText(remoteLoginField.getText()+ new Date()+
+									commandListenerThread.getLastCommand().toString());
+						} 
+						else if (lastCommand.toUpperCase().equals("NICK")) 
+						{							
+							remoteLoginField.setText(lastCommand.toString());
+						} 
+						
+						else if (lastCommand.toUpperCase().equals("ACCEPT")) 
+						{							
+							IncomingMessage.append("User is accepted");
+						} 
+						else if (lastCommand.toUpperCase().equals("REJECT")) 
+						{							
+							IncomingMessage.append("User is rejected");
+						} 
+						else if (lastCommand.toUpperCase().equals("DISCONNECT")) 
+						{							
+							IncomingMessage.append("User was disconnected");
+							if (connection != null) 
+			            	{
+								connection.disconnect();
+								connectButton.setEnabled(true);
+								disconnectButton.setEnabled(false);
+								sendButton.setEnabled(false);
+								applyButton.setEnabled(true);
+								localLoginField.setEditable(true);
+								remoteAddrField.setEditable(true);
+			            	}
+						} 
+						
+
+						}
+				});
+			}
+
 	
 
 }
