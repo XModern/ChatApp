@@ -87,11 +87,6 @@ public class CallListenerThread extends Observable implements Runnable
 			{
 				System.out.println("Error!!! (CallListenerThread)");
 			}	
-			//////
-			setChanged();
-			notifyObservers();
-			//////
-			
 		}
 		
 	}

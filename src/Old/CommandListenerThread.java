@@ -29,18 +29,13 @@ public class CommandListenerThread extends Observable implements Runnable
 
 	public void run() 
 	{
-		while(true)
-		{
-			connection.receiveCommand();
-		}
-		
-		/*while(!disconnect)
+		while(!disconnect)
 		{
 			if ((lastCommand.receive(connection.receiveCommand()).equals("DISCONNECT"))||(lastCommand.receive(connection.receiveCommand()).equals("REJECT")))
 			{
 				stop();
 			}
-		}*/
+		}
 		
 	}
 	

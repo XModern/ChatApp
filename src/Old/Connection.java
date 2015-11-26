@@ -1,5 +1,3 @@
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -7,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -21,8 +18,8 @@ public class Connection
 	private ServerSocket serverSocket;	
 	private Socket socket;	
 	private String line;	
-	private BufferedOutputStream outStream;
-	private BufferedInputStream inputStream;	
+	private DataOutputStream outStream;
+	private DataInputStream inputStream;	
 	private String Nickname;
 	private String codingName="UTF-8";	
 	private final String ChatVersion="ChatApp 2015 v1. user ";
@@ -44,8 +41,8 @@ public class Connection
 			this.Nickname=Nickname;
 			InetAddress ip= InetAddress.getByName(ipStr);
 			socket= new Socket(ip,port);
-			outStream= new BufferedOutputStream(socket.getOutputStream());
-			inputStream=new BufferedInputStream(socket.getInputStream());
+			outStream= new DataOutputStream(socket.getOutputStream());
+			inputStream=new DataInputStream(socket.getInputStream());
 		}
 		catch(IOException e)
 		{
@@ -59,8 +56,8 @@ public class Connection
 		{
 			this.Nickname=Nickname;
 			this.socket= socket;
-			outStream= new BufferedOutputStream(socket.getOutputStream());
-			inputStream=new BufferedInputStream(socket.getInputStream());
+			outStream= new DataOutputStream(socket.getOutputStream());
+			inputStream=new DataInputStream(socket.getInputStream());
 		}
 		catch(IOException e)
 		{
@@ -68,51 +65,26 @@ public class Connection
 		}
 		
 	}
-	
-	public void openStreams()
+	public void sendCommand(String Text)
 	{
 		try
 		{
-		outStream= new BufferedOutputStream(socket.getOutputStream());
-		inputStream=new BufferedInputStream(socket.getInputStream());
-		}
-		catch (UnsupportedEncodingException e) 
-		{
-			System.out.println("UE Error!!! (openStreams())");
-		} 
-		catch (IOException e) 
-		{
-			System.out.println("IO Error!!! (openStreams())");
-		}
-	}
-	public void sendCommand(String Text)
-	{
-		try 
-		{
-			System.out.println(socket.getInetAddress()+":"+socket.getPort()+" "+Text +" "+ endOfLine);
-			outStream.write((Text+" "+ endOfLine).getBytes(codingName));
+			outStream.write(Text.getBytes(codingName));
+			outStream.write(endOfLine.getBytes(codingName));
 			outStream.flush();
-		} 
-		catch (UnsupportedEncodingException e) 
-		{
-			System.out.println("UE Error!!! (sendCommand)");
-		} 
-		catch (IOException e) 
-		{
-			System.out.println("IO Error!!! (sendCommand)");
 		}
-		//outStream.write(Text.getBytes(codingName));
-		//outStream.write(endOfLine.getBytes(codingName));
+		catch(IOException e)
+		{
+			System.out.println("IO Error!!! (sendMessage)");
+		}
 	}
 	
 	public void sendMessage(String Text)
 	{
 		try
 		{
-			//sendCommand("Message");
-			//outStream.write(Text.getBytes(codingName));
-			System.out.println(socket.getInetAddress()+":"+socket.getPort()+" "+"Message"+" "+Text+" "+endOfLine);
-			outStream.write(("Message"+" "+Text+" "+endOfLine).getBytes(codingName));
+			sendCommand("Message");
+			outStream.write(Text.getBytes(codingName));
 			outStream.flush();
 		}
 		catch(IOException e)
@@ -123,7 +95,6 @@ public class Connection
 	
 	public void busyLine(String Nickname)
 	{
-		System.out.println(ChatVersion+Nickname+" busy");
 		sendCommand(ChatVersion+Nickname+" busy");
 		/*try
 		{
@@ -138,22 +109,7 @@ public class Connection
 	
 	public void SuccessfulCall(String Nickname)
 	{
-		System.out.println(ChatVersion+Nickname);
-		sendCommand(ChatVersion+Nickname);
-		/*try 
-		{
-			BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream(),"UTF-8"));
-			String line= in.readLine();
-			System.out.println(line);
-		} 
-		catch (UnsupportedEncodingException e) 
-		{
-			e.printStackTrace();
-		} 
-		catch (IOException e) 
-		{
-			e.printStackTrace();
-		}*/
+		sendCommand(ChatVersion+Nickname+" answer");
 	}
 	
 	public void accept() 
@@ -205,15 +161,9 @@ public class Connection
 		return line;
 	}
 	
-	
 	public Connection returnConnection()
 	{
 		return this;
-	}
-	
-	public String getIP()
-	{
-		return socket.getRemoteSocketAddress().toString();
 	}
 
 }

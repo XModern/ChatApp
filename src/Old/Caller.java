@@ -33,12 +33,9 @@ public class Caller
 		try
 		{
 			InetAddress ip= InetAddress.getByName(internetAddress);
-			System.out.println("Calling...");
 			Socket socket= new Socket(ip,port);
-			System.out.println("Calling...");
 			if (socket.isConnected())
 			{
-				System.out.println("Call accepted");
 				Connection connection=new Connection(socket);
 				return connection;
 			}
@@ -68,7 +65,7 @@ public class Caller
 		return Nickname;
 	}
 
-	public String getRemoteAddress() {
+	public String getRemoteAddess() {
 		return internetAddress;
 	}
 	

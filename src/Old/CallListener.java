@@ -44,7 +44,7 @@ public class CallListener
 		{*/
 			serverSocket = new ServerSocket(port);
 			Socket socket = serverSocket.accept();
-			Connection connection=new Connection(Nickname,socket);	
+			Connection connection=new Connection(Nickname,serverSocket.accept());	
 			return connection;	
 		/*}
 		catch(IOException e)
