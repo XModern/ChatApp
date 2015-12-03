@@ -40,6 +40,7 @@ public class Caller
 			{
 				System.out.println("Call accepted");
 				Connection connection=new Connection(socket);
+				//connection.openOutputStream();
 				return connection;
 			}
 		}

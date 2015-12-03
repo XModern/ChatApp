@@ -32,30 +32,65 @@ public class Command
 	
 	private void check(String command)
 	{
-		if (command.toUpperCase().equals("DISCONNECT"))
+		if(command.toUpperCase().startsWith("MESSAGE"))
 		{
-			currentCommand=command.toUpperCase();
+			currentCommand="ACCEPTED";
+			System.out.println("MESSAGE");
+		}
+		else if((command.toUpperCase().startsWith("CHATAPP "))&&(command.toUpperCase().endsWith("BUSY")))
+		{
+			currentCommand="REJECTED";
+			System.out.println("CHATAPP and BUSY ");
+		}
+		else if((command.toUpperCase().startsWith("CHATAPP "))&&!(command.toUpperCase().endsWith("BUSY")))
+		{
+			currentCommand="ACCEPTED";
+			System.out.println("CHATAPP and !BUSY ");
+		}
+		else if(command.toUpperCase().startsWith("CHATAPP "))
+		{
+			currentCommand="ACCEPTED";
+			System.out.println("CHATAPP");
+		}
+		else if(command.toUpperCase().startsWith("DISCONNECT"))
+		{
+			currentCommand="DISCONNECT";
+			System.out.println("DISCONNECT");
+		}
+		else 
+		{
+			currentCommand="MISS";//currentCommand="REJECTED";
+			System.out.println("MISS");
+		}
+		/*if (command.toUpperCase().equals("DISCONNECT"))
+		{
+			//currentCommand=command.toUpperCase();
+			currentCommand="REJECTED";
 		}
 		else if(command.toUpperCase().equals("ACCEPT"))
 		{
-			currentCommand=command.toUpperCase();
+			//currentCommand=command.toUpperCase();
+			currentCommand="ACCEPTED";
 		}
 		else if(command.toUpperCase().equals("REJECT"))
 		{
-			currentCommand=command.toUpperCase();
+			//currentCommand=command.toUpperCase();
+			currentCommand="REJECTED";
 		}
 		else if(command.toUpperCase().equals("MESSAGE"))
 		{
-			currentCommand=command.toUpperCase();
+			//currentCommand=command.toUpperCase();
+			currentCommand="REJECTED";
 		}
 		else if(command.toUpperCase().equals("NICK"))
 		{
-			currentCommand=command.toUpperCase();
-		}
-		else currentCommand=null;
+			//currentCommand=command.toUpperCase();
+			currentCommand="REJECTED";
+		}*/
 	}
 	public String receive(String command)
 	{
+		System.out.println("Command: "+command);
 		check(command);
 		return currentCommand;
 	}

@@ -34,13 +34,17 @@ public class CallListenerThread extends Observable implements Runnable
 	{
 		return callListener.getLocalNick();
 	}
-	public SocketAddress getCompanionInternetAddress() throws IOException
+	/*public SocketAddress getCompanionInternetAddress() throws IOException
 	{
 			return callListener.getRemoteAdress();
-	}
+	}*/
 	public Connection getConnection() 
 	{
 		return connection;
+	}
+	public SocketAddress getRemoteAddress()
+	{
+		return callListener.getRemoteAddress();
 	}
 	
 	public boolean isBusy()
@@ -69,11 +73,13 @@ public class CallListenerThread extends Observable implements Runnable
 	
 	public void run() 
 	{
-		while(true)
+		while(connection==null)
 		{
 			try 
 			{
+				System.out.println("wait for opponent");			
 				connection=callListener.getConnection();
+            	connection.openStreams();
 				if (connection==null)
 				{
 					callStatus="BUSY";

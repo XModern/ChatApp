@@ -12,11 +12,22 @@ public class CallListener
 	private ServerSocket serverSocket;	
 	private String Nickname;
 	private boolean isBusy;
-	SocketAddress listenAddress;
+	private SocketAddress listenAddress;
+	private Socket socket;
 	
 	public CallListener()
 	{
-	
+		/*try
+		{*/
+			Nickname = "Guest";
+			internetAddress = "127.0.0.1";
+			//serverSocket = new ServerSocket(Connection.port);
+			isBusy=false;
+		/*}
+		catch(IOException e)
+		{
+			System.out.println("Error!!! (CallListener())");
+		}*/
 	}
 	
 	public CallListener(String Nickname)
@@ -43,7 +54,7 @@ public class CallListener
 		/*try
 		{*/
 			serverSocket = new ServerSocket(port);
-			Socket socket = serverSocket.accept();
+			socket = serverSocket.accept();
 			Connection connection=new Connection(Nickname,socket);	
 			return connection;	
 		/*}
@@ -73,11 +84,10 @@ public class CallListener
 	        return null;
 	    }
 
-	    public SocketAddress getRemoteAdress() throws IOException 
+	    public SocketAddress getRemoteAddress() 
 	    {
-	        return serverSocket.accept().getRemoteSocketAddress();
-	    	//return socket
-	    }
+			return socket.getRemoteSocketAddress();
+		}
 
 	    public void setLocalNick(String Nickname)
 	    {

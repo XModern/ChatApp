@@ -8,7 +8,7 @@ public class CommandListenerThread extends Observable implements Runnable
 	private Command lastCommand;
 	
 	private boolean disconnect;
-	private final static String endOfLine="0x0A";
+	private final static String endOfLine="\n";
 	
 	CommandListenerThread(Connection connection)
 	{
@@ -16,9 +16,14 @@ public class CommandListenerThread extends Observable implements Runnable
 		disconnect=false;
 	}
 	
+	public CommandListenerThread() 
+	{
+		//
+	}
+
 	void start() 
 	{
-		Thread commandListenerThread = new Thread();
+		Thread commandListenerThread = new Thread(this);
 		commandListenerThread.start();
 	}
 
@@ -29,10 +34,30 @@ public class CommandListenerThread extends Observable implements Runnable
 
 	public void run() 
 	{
-		while(true)
+		System.out.println("Here111111111");
+		lastCommand=new Command();
+		while(!disconnect)
 		{
-			connection.receiveCommand();
+			System.out.println("Here2222222");
+			String line=connection.receiveCommand();
+			
+			System.out.println("HERE3333333");
+			System.out.println(connection.getIP()+" "+line);
+			
+			System.out.println("LastCommand: "+lastCommand.receive(line));
+			
+			if (/*lastCommand*/lastCommand.receive(line) != null) 
+			{		
+				if ((getLastCommandS().toUpperCase().equals("DISCONNECT")
+						|| ((getLastCommandS().toUpperCase().equals("REJECT"))))) 
+				{
+					disconnect = true;
+				}
+			}
 		}
+		
+		this.setChanged();
+		this.notifyObservers();
 		
 		/*while(!disconnect)
 		{

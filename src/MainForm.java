@@ -306,14 +306,16 @@ public class MainForm
 	                	caller=new Caller(localLoginField.getText(),remoteAddrField.getText());
 	                	/*try
 	                	{*/
-	                	System.out.println("Here11111");
+	                	//System.out.println("Here11111");
 	                		connection= caller.call();
-		                	System.out.println("Here22222");
+		                	//System.out.println("Here22222");
 	                		//connection=new Connection(localLoginField.getText(),remoteAddrField.getText());
 	                		//remoteAddrField.setText(callListenerThread.getCallInternetAddress().toString());
+
 	                		if (connection != null) 
 	                		{
-	                			connectButton.setEnabled(false);
+		                		connection.openStreams();
+	                			/*connectButton.setEnabled(false);
 		    	                applyButton.setEnabled(true);
 		    	                
 		                		localLoginField.setEditable(false);
@@ -321,20 +323,20 @@ public class MainForm
 		                		
 	                			connection.openStreams();
 	                			disconnectButton.setEnabled(true);
-	                			sendButton.setEnabled(true);
+	                			sendButton.setEnabled(true);*/
+	                			forConnect();
 	                			//remoteLoginField.setText(callListenerThread.getCallInternetAddress().toString());
 	                			remoteLoginField.setText(connection.getIP());
 	                			//System.out.println("---------------------------");
+//connection.openStreams();
 								commandListenerThread = new CommandListenerThread(connection);
 								////
 			                    remoteLoginField.setText(caller.getRemoteAddress());
 			                    /////
 								commandListenerThread.start();
-								connection.SuccessfulCall(localLoginField.getText());
-								System.out.println("=======================");
-
 								
-								System.out.println(localLoginField.getText()+" "+connection.getIP());
+								//System.out.println(localLoginField.getText()+" "+connection.getIP());
+								//connection.openOutputStream();
 								connection.SuccessfulCall(localLoginField.getText());
 								System.out.println("---------------------------");
 							}
@@ -360,12 +362,13 @@ public class MainForm
 	            	if (connection != null) 
 	            	{
 						connection.disconnect();
-						connectButton.setEnabled(true);
+						/*connectButton.setEnabled(true);
 						disconnectButton.setEnabled(false);
 						sendButton.setEnabled(false);
 						applyButton.setEnabled(true);
 						localLoginField.setEditable(true);
-						remoteAddrField.setEditable(true);
+						remoteAddrField.setEditable(true);*/
+						forDisconnect();
 	            	}
 	            }
 	        });
@@ -374,9 +377,19 @@ public class MainForm
 		 {
 	            public void actionPerformed(ActionEvent e) 
 	            {
+	            	if (localLoginField.getText().equals(""))
+	            	{
+	            		localLoginField.setText("Guest");
+	            	}
+	            	callListenerThread = new CallListenerThread();
+	            	callListenerThread.start();
+					commandListenerThread = new CommandListenerThread();
+					ThreadOfCall();
+//System.out.println("lol_1");
+					ThreadOfCommand();
+//System.out.println("lol_2");
 	                connectButton.setEnabled(true);
 	                disconnectButton.setEnabled(false);
-	                sendButton.setEnabled(false);
 	                applyButton.setEnabled(true);
 	            }
 	        });
@@ -386,16 +399,26 @@ public class MainForm
 		
 	}
 	
-	public void ThreadOfCall() throws IOException {
-		callListenerThread.addObserver(new Observer() {
+	public void ThreadOfCall() /*throws IOException*/ 
+	{
+		callListenerThread.addObserver(new Observer() 
+		{
 
 			public void update(Observable arg0, Object arg1) 
 			{
-				System.out.println("wait for opponent");
-				connection = callListenerThread.getConnection();
-				System.out.println("Connection getted");
-				commandListenerThread.setConnection(connection);
-				commandListenerThread.start();
+				//System.out.println("wait for opponent");
+					connection = callListenerThread.getConnection();
+					System.out.println("Connection getted");
+	                sendButton.setEnabled(true);
+					//connection.openStreams();
+					//connection.openStreams();
+					connection.SuccessfulCall(localLoginField.getText());
+					commandListenerThread.setConnection(connection);
+					commandListenerThread.start();
+				//commandListenerThread.setConnection(connection);
+				//commandListenerThread.start();
+				
+				
 				/*try 
 				{
 					forConnect();
@@ -417,11 +440,12 @@ public class MainForm
 				{
 					public void update(Observable arg0, Object arg1) 
 					{
+						System.out.println("Here!!!!");
 						String lastCommand = commandListenerThread.getLastCommandS();
 						/////
-						IncomingMessage.setText(IncomingMessage.getText()+" "+commandListenerThread.getLastCommandS());
+						IncomingMessage.setText(IncomingMessage.getText()+" "+lastCommand);
 						/////
-						System.out.println("Here!!!");
+						//System.out.println("Here!!!");
 						System.out.println(commandListenerThread.getLastCommandS());
 						Command commandList=new Command();
 						if (lastCommand.toUpperCase().equals("MESSAGE")) 
@@ -461,6 +485,31 @@ public class MainForm
 						}
 				});
 			}
+	
+	public void forConnect()
+	{
+		connectButton.setEnabled(false);
+        applyButton.setEnabled(true);
+        
+		localLoginField.setEditable(false);
+		remoteAddrField.setEditable(false);
+
+		disconnectButton.setEnabled(true);
+		sendButton.setEnabled(true);
+	}
+	
+	public void forDisconnect()
+	{
+		connectButton.setEnabled(true);
+		disconnectButton.setEnabled(false);
+		sendButton.setEnabled(false);
+		applyButton.setEnabled(true);
+		localLoginField.setEditable(true);
+		localLoginField.setText("");
+		remoteAddrField.setEditable(true);
+		remoteAddrField.setText("");
+		IncomingMessage.setEditable(false);
+	}
 
 	
 
