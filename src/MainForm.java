@@ -384,9 +384,13 @@ public class MainForm
 	            	callListenerThread = new CallListenerThread();
 	            	callListenerThread.start();
 					commandListenerThread = new CommandListenerThread();
+					System.out.println("11111111111111111111111aaaa");
+					
 					ThreadOfCall();
+					System.out.println("2222222222222222222aaaa");
 //System.out.println("lol_1");
 					ThreadOfCommand();
+					System.out.println("33333333333333333aaaa");
 //System.out.println("lol_2");
 	                connectButton.setEnabled(true);
 	                disconnectButton.setEnabled(false);
@@ -440,13 +444,16 @@ public class MainForm
 				{
 					public void update(Observable arg0, Object arg1) 
 					{
-						System.out.println("Here!!!!");
+						System.out.println("Hhhhhhhhhhhhhhhhhhhhhere!!!!");
 						String lastCommand = commandListenerThread.getLastCommandS();
 						/////
 						IncomingMessage.setText(IncomingMessage.getText()+" "+lastCommand);
 						/////
-						//System.out.println("Here!!!");
-						System.out.println(commandListenerThread.getLastCommandS());
+						System.out.println("Hhhhhhhhhhhhhhhhhere!!!");
+						
+						//System.out.println("commandListenerThread.getLastCommandS()"+commandListenerThread.getLastCommandS());
+						System.out.println("commandListenerThread.getMessage(): "+commandListenerThread.getMessage());
+						IncomingMessage.setText(IncomingMessage.getText()+"\n"+"[" +new Date().getHours()+": "+new Date().getMinutes()+": "+new Date().getSeconds()+"] "+remoteLoginField.getText()+": "+commandListenerThread.getMessage());
 						Command commandList=new Command();
 						if (lastCommand.toUpperCase().equals("MESSAGE")) 
 						{

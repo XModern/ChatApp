@@ -6,6 +6,7 @@ public class CommandListenerThread extends Observable implements Runnable
 {
 	private Connection connection;
 	private Command lastCommand;
+	private String line;
 	
 	private boolean disconnect;
 	private final static String endOfLine="\n";
@@ -18,7 +19,7 @@ public class CommandListenerThread extends Observable implements Runnable
 	
 	public CommandListenerThread() 
 	{
-		//
+		
 	}
 
 	void start() 
@@ -39,7 +40,7 @@ public class CommandListenerThread extends Observable implements Runnable
 		while(!disconnect)
 		{
 			System.out.println("Here2222222");
-			String line=connection.receiveCommand();
+			line=connection.receiveCommand();
 			
 			System.out.println("HERE3333333");
 			System.out.println(connection.getIP()+" "+line);
@@ -54,10 +55,12 @@ public class CommandListenerThread extends Observable implements Runnable
 					disconnect = true;
 				}
 			}
+		
+			this.setChanged();
+			this.notifyObservers();
+			
 		}
 		
-		this.setChanged();
-		this.notifyObservers();
 		
 		/*while(!disconnect)
 		{
@@ -73,6 +76,15 @@ public class CommandListenerThread extends Observable implements Runnable
 	{
 		disconnect=false;
 		this.connection=connection;
+	}
+	
+	public String getMessage() 
+	{
+		if (line.toUpperCase().startsWith("Message"))
+		{
+			line=line.substring(8, line.length());
+		}
+		return line;
 	}
 	
 	public String getLastCommandS() 
