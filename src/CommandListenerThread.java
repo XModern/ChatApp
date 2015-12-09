@@ -7,8 +7,11 @@ public class CommandListenerThread extends Observable implements Runnable
 	private Connection connection;
 	private Command lastCommand;
 	private String line;
+	private boolean check;
 	
 	private boolean disconnect;
+	private String opponentName;
+	
 	private final static String endOfLine="\n";
 	
 	CommandListenerThread(Connection connection)
@@ -35,15 +38,20 @@ public class CommandListenerThread extends Observable implements Runnable
 
 	public void run() 
 	{
-		System.out.println("Here111111111");
+		//System.out.println("Here111111111");
 		lastCommand=new Command();
+		check=false;
 		while(!disconnect)
 		{
-			System.out.println("Here2222222");
-			line=connection.receiveCommand();
+			//System.out.println("Here2222222");
+			System.out.println("connection.returnConnection(): "+connection.returnConnection());
+			if(connection.returnConnection()!=null)
+			{
+				line=connection.receiveCommand();
+			}
 			
-			System.out.println("HERE3333333");
-			System.out.println(connection.getIP()+" "+line);
+			//System.out.println("HERE3333333");
+			//System.out.println(connection.getIP()+" "+line);
 			
 			System.out.println("LastCommand: "+lastCommand.receive(line));
 			
@@ -53,7 +61,15 @@ public class CommandListenerThread extends Observable implements Runnable
 						|| ((getLastCommandS().toUpperCase().equals("REJECT"))))) 
 				{
 					disconnect = true;
+					//connection.disconnectReceiver();
 				}
+			}
+			
+			if (check==false)
+			{
+				check=true;
+				opponentName=line.substring(line.indexOf("user")+5,line.length()-1);
+				line="";
 			}
 		
 			this.setChanged();
@@ -80,9 +96,9 @@ public class CommandListenerThread extends Observable implements Runnable
 	
 	public String getMessage() 
 	{
-		if (line.toUpperCase().startsWith("Message"))
+		if ((line.toUpperCase().startsWith("MESSAGE"))&&(line!=""))
 		{
-			line=line.substring(8, line.length());
+			line=line.substring(8);
 		}
 		return line;
 	}
@@ -90,6 +106,16 @@ public class CommandListenerThread extends Observable implements Runnable
 	public String getLastCommandS() 
 	{
 		return lastCommand.getCurrentCommand();
+	}
+	
+	public boolean isConnected() 
+	{
+		return disconnect;
+	}
+	
+	public String getOpponentName() 
+	{
+		return opponentName;
 	}
 	
 	public Command getLastCommand() 

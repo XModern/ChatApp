@@ -30,24 +30,25 @@ public class Command
 		return false;
 	}
 	
-	private void check(String command)
+	private String check(String command)
 	{
 		if(command.toUpperCase().startsWith("MESSAGE"))
 		{
-			currentCommand="ACCEPTED";
+			//currentCommand="ACCEPTED";
+			currentCommand="MESSAGE";
 			System.out.println("MESSAGE");
 		}
-		else if((command.toUpperCase().startsWith("CHATAPP "))&&(command.toUpperCase().endsWith("BUSY")))
+		else if((command.toUpperCase().startsWith("CHATAPP"))&&(command.toUpperCase().endsWith("BUSY")))
 		{
 			currentCommand="REJECTED";
 			System.out.println("CHATAPP and BUSY ");
 		}
-		else if((command.toUpperCase().startsWith("CHATAPP "))&&!(command.toUpperCase().endsWith("BUSY")))
+		else if((command.toUpperCase().startsWith("CHATAPP"))&&!(command.toUpperCase().endsWith("BUSY")))
 		{
 			currentCommand="ACCEPTED";
 			System.out.println("CHATAPP and !BUSY ");
 		}
-		else if(command.toUpperCase().startsWith("CHATAPP "))
+		else if(command.toUpperCase().startsWith("CHATAPP"))
 		{
 			currentCommand="ACCEPTED";
 			System.out.println("CHATAPP");
@@ -62,6 +63,7 @@ public class Command
 			currentCommand="MISS";//currentCommand="REJECTED";
 			System.out.println("MISS");
 		}
+		return command;
 		/*if (command.toUpperCase().equals("DISCONNECT"))
 		{
 			//currentCommand=command.toUpperCase();

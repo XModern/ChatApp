@@ -38,7 +38,7 @@ public class Connection
 	public Connection(Socket socket) 
 	{
 		this.socket = socket;
-		System.out.println("tttttttttt");
+		//System.out.println("tttttttttt");
 		///////////////////
 		/*try
 		{
@@ -107,6 +107,42 @@ System.out.println("IO Error!!! (Connection)");
 		}
 	}
 	
+	public void closeStreams()
+	{
+		try
+		{
+			outStream.close();
+			///////////////////////////////////////////////////inputStream=new BufferedInputStream(socket.getInputStream());
+			inputStream.close();
+		}
+		catch (UnsupportedEncodingException e) 
+		{
+			System.out.println("UE Error!!! (openStreams())");
+		} 
+		catch (IOException e) 
+		{
+			System.out.println("IO Error!!! (openStreams())");
+		}
+	}
+	
+	public void disconnectReceiver()
+	{
+		try
+		{
+			outStream.close();
+			inputStream.close();
+			socket.close();
+		}
+		catch (UnsupportedEncodingException e) 
+		{
+			System.out.println("UE Error!!! (openStreams())");
+		} 
+		catch (IOException e) 
+		{
+			System.out.println("IO Error!!! (openStreams())");
+		}
+	}
+	
 	public void openInputStream()
 	{
 		try
@@ -144,6 +180,7 @@ System.out.println("IO Error!!! (Connection)");
 		try 
 		{
 //openStreams();
+			////////////////////////////////////hhhhhhhhhheeeeeeeeeerrrrrrrrrrrrreeeeeeeeeee eeeeerrrrrrrrrroooooooorrrrrrrrrrrr!!!!!!!
 			System.out.println(socket.getInetAddress()+":"+socket.getPort()+" "+Text +" "+ endOfLine);
 			outStream.write((Text+" "+ endOfLine).getBytes(codingName));
 			outStream.flush();
@@ -235,7 +272,8 @@ System.out.println("IO Error!!! (Connection)");
 		try
 		{
 			sendCommand("Disconnect");
-			outStream.close();
+			//outStream.close();
+			closeStreams();
 			socket.close();
 		}
 		catch(IOException e)
