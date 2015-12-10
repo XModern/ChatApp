@@ -49,19 +49,26 @@ public class CallListener
 		}
 	}
 	
-	public Connection getConnection() throws IOException
+	public Connection getConnection() /*throws IOException*/
 	{
-		/*try
-		{*/
+		socket=new Socket();
+		Connection connection=new Connection();
+		try
+		{
 			serverSocket = new ServerSocket(port);
+			//socket.setSoTimeout(20000);
+			//serverSocket.setSoTimeout(20000);
 			socket = serverSocket.accept();
-			Connection connection=new Connection(Nickname,socket);	
+			
+			connection=new Connection(Nickname,socket);	
 			return connection;	
-		/*}
+		}
 		catch(IOException e)
 		{
 			System.out.println("IO Error!!! getConnection()");
-		}	*/
+		}
+		System.out.println("Nickname: "+Nickname+"s.getInetAddress: "+socket.getInetAddress()+" s.getPort: "+socket.getPort());
+		return connection;
 	}
 
 	    public String getLocalNick()

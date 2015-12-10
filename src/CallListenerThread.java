@@ -71,13 +71,13 @@ public class CallListenerThread extends Observable implements Runnable
 	}
 	
 	
-	public void run() 
+	public void run() throws NullPointerException
 	{
 		while(connection==null)
 		{
-			try 
-			{
-				System.out.println("wait for opponent");			
+			//try 
+			//{
+				System.out.println("wait for opponent");
 				connection=callListener.getConnection();
             	connection.openStreams();
 				if (connection==null)
@@ -88,11 +88,11 @@ public class CallListenerThread extends Observable implements Runnable
 				{
 					callStatus="SUCCESS";
 				}
-			} 
-			catch (IOException e) 
-			{
-				System.out.println("Error!!! (CallListenerThread)");
-			}	
+		//	} 
+			//catch (IOException e) 
+			//{
+		//		System.out.println("Error!!! (CallListenerThread)");
+		//	}	
 			//////
 			setChanged();
 			notifyObservers();

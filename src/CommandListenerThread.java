@@ -8,7 +8,7 @@ public class CommandListenerThread extends Observable implements Runnable
 	private Command lastCommand;
 	private String line;
 	private boolean check;
-	
+	private Thread commandListenerThreadin;
 	private boolean disconnect;
 	private String opponentName;
 	
@@ -22,18 +22,20 @@ public class CommandListenerThread extends Observable implements Runnable
 	
 	public CommandListenerThread() 
 	{
-		
+		commandListenerThreadin = new Thread(this);
 	}
 
 	void start() 
 	{
-		Thread commandListenerThread = new Thread(this);
-		commandListenerThread.start();
+		commandListenerThreadin = new Thread(this);
+		commandListenerThreadin.start();
 	}
 
 	void stop() 
 	{
 		disconnect = true;
+		//Thread commandListenerThread = new Thread(this);
+		commandListenerThreadin.stop();
 	}
 
 	public void run() 
@@ -41,10 +43,10 @@ public class CommandListenerThread extends Observable implements Runnable
 		//System.out.println("Here111111111");
 		lastCommand=new Command();
 		check=false;
-		while(!disconnect)
+		while((!disconnect)||(line!=null))
 		{
 			//System.out.println("Here2222222");
-			System.out.println("connection.returnConnection(): "+connection.returnConnection());
+			//System.out.println("connection.returnConnection(): "+connection.returnConnection());
 			if(connection.returnConnection()!=null)
 			{
 				line=connection.receiveCommand();
@@ -52,8 +54,14 @@ public class CommandListenerThread extends Observable implements Runnable
 			
 			//System.out.println("HERE3333333");
 			//System.out.println(connection.getIP()+" "+line);
-			
+			try
+			{
 			System.out.println("LastCommand: "+lastCommand.receive(line));
+			if(line==null)
+			{
+				stop();
+				break;
+			}
 			
 			if (/*lastCommand*/lastCommand.receive(line) != null) 
 			{		
@@ -74,6 +82,11 @@ public class CommandListenerThread extends Observable implements Runnable
 		
 			this.setChanged();
 			this.notifyObservers();
+			}
+			catch(NullPointerException e)
+			{
+				
+			}
 			
 		}
 		
@@ -106,6 +119,11 @@ public class CommandListenerThread extends Observable implements Runnable
 	public String getLastCommandS() 
 	{
 		return lastCommand.getCurrentCommand();
+	}
+	
+	public boolean setConnection(boolean state) 
+	{
+		return disconnect=state;
 	}
 	
 	public boolean isConnected() 

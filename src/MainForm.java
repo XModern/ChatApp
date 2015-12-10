@@ -20,6 +20,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -302,6 +303,8 @@ public class MainForm
 	                	if (localLoginField.getText().equals(""))
 	                	{
 	                		localLoginField.setText("Guest");
+	                		applyButton.setEnabled(false);
+	                        localLoginField.setEditable(false);
 	                	}
 	                	caller=new Caller(localLoginField.getText(),remoteAddrField.getText());
 	                	/*try
@@ -370,6 +373,16 @@ public class MainForm
 						localLoginField.setEditable(true);
 						remoteAddrField.setEditable(true);*/
 						forDisconnect();
+						connection.disconnectReceiver();
+						connection=null;
+						commandListenerThread.stop();
+						
+						
+						/*callListenerThread = new CallListenerThread();
+		            	callListenerThread.start();
+						commandListenerThread = new CommandListenerThread();						
+						ThreadOfCall();
+						ThreadOfCommand();*/
 	            	}
 	            }
 	        });
@@ -382,6 +395,8 @@ public class MainForm
 	            	if (localLoginField.getText().equals(""))
 	            	{
 	            		localLoginField.setText("Guest");
+	            		applyButton.setEnabled(false);
+	                    localLoginField.setEditable(false);
 	            	}
 	            	callListenerThread = new CallListenerThread();
 	            	callListenerThread.start();
@@ -410,14 +425,77 @@ public class MainForm
 			public void update(Observable arg0, Object arg1) 
 			{
 				//System.out.println("wait for opponent");
+					
 					connection = callListenerThread.getConnection();
 					System.out.println("Connection getted");
 	                sendButton.setEnabled(true);
 					//connection.openStreams();
 					//connection.openStreams();
-					connection.SuccessfulCall(localLoginField.getText());
+	                if (localLoginField.getText().equals(""))
+	            	{
+	            		localLoginField.setText("Guest");
+	            	}
+	                
+	                
+	                long t1 = System.currentTimeMillis();
+					long t2 = System.currentTimeMillis();
+					boolean supervisor = true;
+
+					int reply=3;
 					commandListenerThread.setConnection(connection);
 					commandListenerThread.start();
+					
+						while ((reply!=1)||(reply!=0))
+						{
+							reply = JOptionPane.showConfirmDialog(null,
+									"Do you want to accept incoming connection from user ", "",
+									JOptionPane.YES_NO_OPTION);
+							
+							if (t2-t1>=1000)
+							{
+								supervisor=false;
+								break;
+							}
+							else if (reply==0)
+							{
+								supervisor=true;
+								break;
+							}
+							else if (reply==1)
+							{
+								supervisor=true;
+								break;
+							}
+							t2 = System.currentTimeMillis();
+						}
+	                
+	                /*JButton Yes = new JButton("Yes");
+	                JButton No = new JButton("No");
+	                JFrame OptionWindow= new JFrame(); */
+	                
+	                //JOptionPane.showMessageDialog(null, "Do you want to to accept the incoming call?",Yes,No);
+	                if (supervisor)
+	                {
+						
+						if (reply==0)
+						{
+							connection.SuccessfulCall(localLoginField.getText());
+							remoteLoginField.setText(connection.getIP());
+							forConnect();
+						}
+						else if (reply==1)
+						{
+							forDisconnect();
+							connection.reject();
+							commandListenerThread.stop();
+							connection=null;
+						}
+	                }
+	                else
+	                {
+	                	System.out.println("Time is out");
+	                }
+
 					
 					
 				//commandListenerThread.setConnection(connection);
@@ -463,6 +541,7 @@ public class MainForm
 							//IncomingMessage.setText(IncomingMessage.getText()+"\n"+"[" +new Date().getHours()+": "+new Date().getMinutes()+": "+new Date().getSeconds()+"] "+/*remoteLoginField.getText()*/commandListenerThread.getOpponentName()+": "+commandListenerThread.getMessage());
 						//}
 							Command commandList=new Command();
+							//System.out.println("HHHHHHHHHHHHHEEREREERERERERASDSDASDA!@#!@#!@#!@#!#");
 						if ((lastCommand.toUpperCase()/*.equals*/.startsWith("MESSAGE"))&&(commandListenerThread.getMessage()!="")) 
 						{
 							System.out.println("commandListenerThread.getMessage(): "+commandListenerThread.getMessage());
@@ -482,35 +561,54 @@ public class MainForm
 						} 
 						else if (lastCommand.toUpperCase().equals("REJECT")) 
 						{							
-							IncomingMessage.append("User is rejected");
+							//IncomingMessage.append("User is rejected");
+							IncomingMessage.setText(IncomingMessage.getText()+"\n"+"Your call was rejected");
+							connection.reject();
+							forDisconnect();
+							connection=null;
+							commandListenerThread.stop();
+							connection.disconnectReceiver();
 						} 
 						else if (lastCommand.toUpperCase().equals("DISCONNECT")) 
 						{		
 							IncomingMessage.setText(IncomingMessage.getText()+"\n"+"User was disconnected");
-							connection.disconnectReceiver();
+							//commandListenerThread.stop();
 							//IncomingMessage.append("User was disconnected");
 							//connection=null;
-							if (connection != null) 
-			            	{
+							
+							//if (connection != null) 
+			            	//{
 								connection.disconnect();
-								connectButton.setEnabled(true);
+								/*connectButton.setEnabled(true);
 								disconnectButton.setEnabled(false);
 								sendButton.setEnabled(false);
 								applyButton.setEnabled(true);
 								localLoginField.setEditable(true);
-								remoteAddrField.setEditable(true);
+								remoteAddrField.setEditable(true);*/
+								forDisconnect();
+								connection=null;
+								commandListenerThread.stop();
+								connection.disconnectReceiver();
+			            	//}
+								
+							/*if (localLoginField.getText().equals(""))
+			            	{
+			            		localLoginField.setText("Guest");
 			            	}
-						} 
-						
-
+							callListenerThread = new CallListenerThread();
+			            	callListenerThread.start();
+							commandListenerThread = new CommandListenerThread();
+							ThreadOfCall();
+							ThreadOfCommand();*/
 						}
+					}
 				});
 			}
 	
 	public void forConnect()
 	{
 		connectButton.setEnabled(false);
-        applyButton.setEnabled(true);
+        //applyButton.setEnabled(true);
         
 		localLoginField.setEditable(false);
 		remoteAddrField.setEditable(false);
@@ -525,9 +623,9 @@ public class MainForm
 		connectButton.setEnabled(true);
 		disconnectButton.setEnabled(false);
 		sendButton.setEnabled(false);
-		applyButton.setEnabled(true);
-		localLoginField.setEditable(true);
-		localLoginField.setText("");
+		//applyButton.setEnabled(true);
+		//localLoginField.setEditable(true);
+		//localLoginField.setText("");
 		remoteAddrField.setEditable(true);
 		remoteAddrField.setText("");
 		IncomingMessage.setEditable(false);
@@ -540,6 +638,6 @@ public class MainForm
         localLoginField.setEditable(false);
     }
 
-	
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
 
 }

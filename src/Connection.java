@@ -11,6 +11,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 
@@ -90,7 +91,7 @@ System.out.println("IO Error!!! (Connection)");
 	}
 	
 	public void openStreams()
-	{
+	{ 
 		try
 		{
 			outStream= new BufferedOutputStream(socket.getOutputStream());
@@ -104,6 +105,10 @@ System.out.println("IO Error!!! (Connection)");
 		catch (IOException e) 
 		{
 			System.out.println("IO Error!!! (openStreams())");
+		}
+		catch (NullPointerException e)
+		{
+			System.out.println("NullPointerException (openStreams())");
 		}
 	}
 	
@@ -182,7 +187,7 @@ System.out.println("IO Error!!! (Connection)");
 //openStreams();
 			////////////////////////////////////hhhhhhhhhheeeeeeeeeerrrrrrrrrrrrreeeeeeeeeee eeeeerrrrrrrrrroooooooorrrrrrrrrrrr!!!!!!!
 			System.out.println(socket.getInetAddress()+":"+socket.getPort()+" "+Text +" "+ endOfLine);
-			outStream.write((Text+" "+ endOfLine).getBytes(codingName));
+			outStream.write((Text+" "+endOfLine).getBytes(codingName));
 			outStream.flush();
 		} 
 		catch (UnsupportedEncodingException e) 
@@ -255,31 +260,31 @@ System.out.println("IO Error!!! (Connection)");
 	
 	public void reject() 
 	{
-		try
-		{
-			sendCommand("Rejected");
-			outStream.close();
-			socket.close();
-		}
-		catch(IOException e)
-		{
-				System.out.println("IO Error!!! (Reject)");
-		}
+		//try
+		//{
+			sendCommand("Reject");
+			//outStream.close();
+			//socket.close();
+		//}
+		//catch(IOException e)
+		//{
+		//		System.out.println("IO Error!!! (Reject)");
+		//}
 	}
 	
 	public void disconnect()
 	{
-		try
-		{
+	//	try
+	//	{
 			sendCommand("Disconnect");
 			//outStream.close();
-			closeStreams();
-			socket.close();
-		}
-		catch(IOException e)
-		{
-				System.out.println("IO Error!!! (Disconnect)");
-		}
+			//closeStreams();
+			//socket.close();
+		//}
+		//catch(IOException e)
+	//	{
+	//			System.out.println("IO Error!!! (Disconnect)");
+	//	}
 	}
 	
 	public String receiveCommand()
@@ -296,8 +301,18 @@ System.out.println("IO Error!!! (Connection)");
 		{
 			System.out.println("IO Error!!! (receiveMessage)");
 		}*/
+		try
+		{
+			line=inputStream.nextLine();
+		}
+		catch(NoSuchElementException e)
+		{
 			
-		line=inputStream.nextLine();
+		}
+		catch(IllegalStateException e)
+		{
+			
+		}
 		System.out.println("line: "+line+"; IP: "+socket.getInetAddress()+"; port: "+socket.getLocalPort());
 		return line;
 	}

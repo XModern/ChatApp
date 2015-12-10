@@ -34,8 +34,21 @@ public class Caller
 		{
 			InetAddress ip= InetAddress.getByName(internetAddress);
 			System.out.println("Calling...");
+			/*if(new Socket(ip,port).isBound())
+			{
+				System.out.println("isBound");
+			}
+			if(new Socket(ip,port).isConnected())
+			{
+				System.out.println("isConnected");
+			}
+			if(new Socket(ip,port).isClosed())
+			{
+				System.out.println("isClosed");
+			}*/
 			Socket socket= new Socket(ip,port);
 			System.out.println("Calling...");
+			//System.out.println("Socket already busy: "+callListener.isBusy());
 			if (socket.isConnected())
 			{
 				System.out.println("Call accepted");

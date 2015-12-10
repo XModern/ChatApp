@@ -40,8 +40,12 @@ public class Command
 		}
 		else if((command.toUpperCase().startsWith("CHATAPP"))&&(command.toUpperCase().endsWith("BUSY")))
 		{
-			currentCommand="REJECTED";
+			currentCommand="REJECT";
 			System.out.println("CHATAPP and BUSY ");
+		}
+		else if(command.toUpperCase().startsWith("REJECT"))
+		{
+			currentCommand="REJECT";
 		}
 		else if((command.toUpperCase().startsWith("CHATAPP"))&&!(command.toUpperCase().endsWith("BUSY")))
 		{
