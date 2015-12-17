@@ -14,6 +14,7 @@ public class CallListener
 	private boolean isBusy;
 	private SocketAddress listenAddress;
 	private Socket socket;
+	//private boolean flag=true;
 	
 	public CallListener()
 	{
@@ -21,6 +22,14 @@ public class CallListener
 		{*/
 			Nickname = "Guest";
 			internetAddress = "127.0.0.1";
+			try 
+			{
+				serverSocket = new ServerSocket(port);
+			} 
+			catch (IOException e) 
+			{
+				e.printStackTrace();
+			}
 			//serverSocket = new ServerSocket(Connection.port);
 			isBusy=false;
 		/*}
@@ -49,26 +58,89 @@ public class CallListener
 		}
 	}
 	
+	public void dieSocket()
+	{
+		try 
+		{
+			socket.close();
+		} 
+		catch (IOException e) {
+	
+		}
+	}
+	
 	public Connection getConnection() /*throws IOException*/
 	{
-		socket=new Socket();
-		Connection connection=new Connection();
 		try
 		{
-			serverSocket = new ServerSocket(port);
-			//socket.setSoTimeout(20000);
-			//serverSocket.setSoTimeout(20000);
-			socket = serverSocket.accept();
-			
-			connection=new Connection(Nickname,socket);	
-			return connection;	
+			System.out.println("1) SOCKET: "+socket+"; address: "+socket.getInetAddress()+socket.getPort());
+		}
+		catch(NullPointerException e)
+		{
+			System.out.println("1)NullPointerException e in getConnection (Class CallListener)");
+		}
+		//socket=new Socket();
+		Connection connection=new Connection();
+		/*try
+		{
+			//serverSocket=null;
+			System.out.println("Inside socket");
+			//if(flag)
+			//{
+				serverSocket = new ServerSocket(port);
+				//flag=false;
+			//}
 		}
 		catch(IOException e)
 		{
+			System.out.println("IO Error!!! getConnection()(Setting port)");
+		}*/
+			//socket.setSoTimeout(20000);
+			//serverSocket.setSoTimeout(20000);
+			try
+			{
+				System.out.println("2) SOCKET: "+socket+"; address: "+socket.getInetAddress()+socket.getPort());
+			}
+			catch(NullPointerException e)
+			{
+				System.out.println("2)NullPointerException e in getConnection (Class CallListener)");
+			}
+			try
+			{
+				socket = serverSocket.accept();
+				serverSocket.close();
+			}
+			catch(IOException e)
+			{
+				System.out.println("IO Error!!! getConnection()(serverSocket Accepting)");
+			}
+			catch(NullPointerException e)
+			{
+				System.out.println("NullPointerException!!! getConnection()(serverSocket Accepting)");
+			}
+
+			
+			try
+			{
+				System.out.println("3) SOCKET: "+socket+"; address: "+socket.getInetAddress()+socket.getPort());
+			}
+			catch(NullPointerException e)
+			{
+				System.out.println("3)NullPointerException e in getConnection (Class CallListener)");
+			}
+			
+			connection=new Connection(Nickname,socket);
+			
+			System.out.println("Nickname: "+Nickname+"s.getInetAddress: "+socket.getInetAddress()+" s.getPort: "+socket.getPort());
+			
+			return connection;	
+		/*}
+		catch(IOException e)
+		{
 			System.out.println("IO Error!!! getConnection()");
-		}
-		System.out.println("Nickname: "+Nickname+"s.getInetAddress: "+socket.getInetAddress()+" s.getPort: "+socket.getPort());
-		return connection;
+		}*/
+		//System.out.println("Nickname: "+Nickname+"s.getInetAddress: "+socket.getInetAddress()+" s.getPort: "+socket.getPort());
+		//return connection;
 	}
 
 	    public String getLocalNick()
