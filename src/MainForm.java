@@ -374,26 +374,8 @@ public class MainForm
 						remoteAddrField.setEditable(true);*/
 						forDisconnect();
 						connection.disconnectReceiver();
-						connection=callListenerThread.removeConnection();
+						connection=null;
 						commandListenerThread.stop();
-						
-						commandListenerThread.deleteObservers();
-						callListenerThread.deleteObservers();
-						
-						
-						
-						forApply();
-		            	if (localLoginField.getText().equals(""))
-		            	{
-		            		localLoginField.setText("Guest");
-		            		applyButton.setEnabled(false);
-		                    localLoginField.setEditable(false);
-		            	}
-		            	callListenerThread = new CallListenerThread();
-		            	callListenerThread.start();
-						commandListenerThread = new CommandListenerThread();
-						ThreadOfCall();
-						ThreadOfCommand();
 						
 						
 						/*callListenerThread = new CallListenerThread();

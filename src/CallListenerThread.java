@@ -42,12 +42,6 @@ public class CallListenerThread extends Observable implements Runnable
 	{
 		return connection;
 	}
-	
-	public Connection removeConnection()
-	{
-		connection= new Connection(); 
-		return connection;
-	}
 	public SocketAddress getRemoteAddress()
 	{
 		return callListener.getRemoteAddress();
